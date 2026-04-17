@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অ্যাডমিন ড্যাশবোর্ড - অর্গানিক শপ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">অর্গানিক শপ</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">প্রধান পাতা</a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">কার্ট <span id="cart-count" class="badge text-bg-secondary"></span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4" id="admin-container">
+    <!-- Admin content will be injected here via JavaScript -->
+  </main>
+
+  <footer class="bg-light text-center py-3 border-top">
+    <p class="mb-0">&copy; <span id="year"></span> অর্গানিক শপ. সর্বস্বত্ব সংরক্ষিত।</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    // Update year and cart count, then render the admin page
+    document.getElementById('year').textContent = new Date().getFullYear();
+    updateCartCount();
+    renderAdminPage();
+  </script>
+</body>
+</html>

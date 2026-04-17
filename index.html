@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অর্গানিক শপ</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">অর্গানিক শপ</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">প্রধান পাতা</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="cart.html">কার্ট <span id="cart-count" class="badge text-bg-secondary"></span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section d-flex align-items-center justify-content-center text-center position-relative">
+    <!-- Dynamic background image element -->
+    <img id="heroImage" class="hero-bg-image" src="" alt="Hero">
+    <div class="container py-5">
+      <h1 class="display-4 fw-bold shadow-text text-white">স্বাগতম অর্গানিক শপে</h1>
+      <p class="lead fw-normal shadow-text text-white">তাজা, পুষ্টিকর এবং নৈতিকভাবে সংগ্রহ করা অর্গানিক পণ্য আবিষ্কার করুন।</p>
+      <a href="#products" class="btn btn-light btn-lg mt-3">এখনই দেখুন</a>
+    </div>
+  </header>
+
+  <!-- Products Section -->
+  <main class="container my-4">
+    <h2 id="products" class="mb-4">পণ্যসমূহ</h2>
+    <!-- Category Filter Buttons -->
+    <div id="category-filter" class="mb-3"></div>
+    <div id="product-grid" class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- Products will be injected here via JavaScript -->
+    </div>
+
+    <div class="row my-5 text-center">
+      <div class="col-md-4 mb-4">
+        <img src="https://images.pexels.com/photos/10835008/pexels-photo-10835008.jpeg?auto=compress&cs=tinysrgb&w=400" alt="গুণমান" class="mb-3" width="80" height="80">
+        <h5>১০০% প্রাকৃতিক</h5>
+        <p class="small">আমাদের পণ্যসমূহ অর্গানিক খামার থেকে সংগ্রহ করা এবং ক্ষতিকর রসায়ন থেকে মুক্ত।</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <img src="https://images.pexels.com/photos/4021761/pexels-photo-4021761.jpeg?auto=compress&cs=tinysrgb&w=400" alt="সুস্থতা" class="mb-3" width="80" height="80">
+        <h5>সুস্থতা সহায়তা</h5>
+        <p class="small">অর্গানিক খাবার খাবার pesticide residue কমায়, যা দীর্ঘমেয়াদে স্বাস্থ্যের জন্য উপকারী হতে পারে【168350692069053†L330-L344】।</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <img src="https://images.pexels.com/photos/1441390/pexels-photo-1441390.jpeg?auto=compress&cs=tinysrgb&w=400" alt="টেকসই" class="mb-3" width="80" height="80">
+        <h5>টেকসই পন্থা</h5>
+        <p class="small">অর্গানিক নির্বাচন করলে biodiversity ও পরিবেশ রক্ষা সহায়ক হয়【168350692069053†L392-L406】।</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-3 border-top">
+    <p class="mb-0">&copy; <span id="year"></span> অর্গানিক শপ. সর্বস্বত্ব সংরক্ষিত।</p>
+  </footer>
+
+  <!-- WhatsApp floating contact button -->
+  <div id="whatsappButton">
+    <a href="https://wa.me/8801787654321?text=হ্যালো%20অর্গানিক%20শপ" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+  </div>
+
+  <!-- Hidden admin link positioned at bottom left so customers cannot easily see it -->
+  <div id="adminLink" style="position: fixed; bottom: 0; left: 0; width: 20px; height: 20px; opacity: 0.02; cursor: pointer;" title="Admin"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Update the year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Hidden admin link click handler
+    document.getElementById('adminLink').addEventListener('click', function() {
+      window.location.href = 'admin.html';
+    });
+
+    // Hero slider: cycle through hero images stored in localStorage
+    (function() {
+      const heroImgEl = document.getElementById('heroImage');
+      if (!heroImgEl) return;
+      // Default to gradient background by leaving src empty if no images
+      const imgs = JSON.parse(localStorage.getItem('heroImages') || '[]');
+      if (imgs.length === 0) {
+        // no images, hide image element so gradient shows through
+        heroImgEl.style.display = 'none';
+        return;
+      }
+      let current = 0;
+      // Set first image
+      heroImgEl.src = imgs[current];
+      heroImgEl.style.opacity = 1;
+      // Cycle images every 5 seconds
+      setInterval(() => {
+        current = (current + 1) % imgs.length;
+        heroImgEl.style.opacity = 0;
+        setTimeout(() => {
+          heroImgEl.src = imgs[current];
+          heroImgEl.style.opacity = 1;
+        }, 1000);
+      }, 5000);
+    })();
+  </script>
+</body>
+</html>

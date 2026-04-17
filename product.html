@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>পণ্য বিস্তারিত - অর্গানিক শপ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .package-card { border: 1px solid #dee2e6; padding: 1rem; border-radius: .5rem; cursor: pointer; }
+    .package-card.active { border-color: #0d6efd; background-color: #e7f1ff; }
+    /* Hidden admin link at bottom left */
+    .hidden-admin-link { position: fixed; bottom: 0; left: 0; width: 20px; height: 20px; opacity: 0.02; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">অর্গানিক শপ</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">প্রধান পাতা</a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">কার্ট <span id="cart-count" class="badge text-bg-secondary"></span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4" id="product-page">
+    <!-- Dynamic content will be rendered here -->
+  </main>
+
+  <footer class="bg-light text-center py-3 border-top">
+    <p class="mb-0">&copy; <span id="year"></span> অর্গানিক শপ. সর্বস্বত্ব সংরক্ষিত।</p>
+  </footer>
+
+  <!-- Hidden admin link -->
+  <div id="adminLink" class="hidden-admin-link" title="Admin"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Hidden admin link click handler
+    document.getElementById('adminLink').addEventListener('click', function() {
+      window.location.href = 'admin.html';
+    });
+
+    // Render product page
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const productId = parseInt(params.get('id'));
+      const products = getProducts();
+      const categories = getCategories();
+      const product = products.find(p => p.id === productId);
+      const container = document.getElementById('product-page');
+      if (!product) {
+        container.innerHTML = '<p>পণ্যটি পাওয়া যায়নি।</p>';
+        return;
+      }
+      // Compose category names
+      const catNames = product.categoryIds.map(id => {
+        const c = categories.find(cat => cat.id === id);
+        return c ? c.name : '';
+      }).join(', ');
+      // Shipping cost (static)
+      const shippingCost = 80;
+      // Build package cards
+      let packageOptionsHTML = '';
+      product.packages.forEach((pkg, index) => {
+        packageOptionsHTML += `
+          <div class="col-md-4 mb-3">
+            <div class="package-card" data-index="${index}">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="packageOption" id="package${index}" value="${index}">
+                <label class="form-check-label w-100" for="package${index}">
+                  <strong>${pkg.name}</strong><br>
+                  <span>৳ ${pkg.price}</span><br>
+                  <small class="text-muted">${pkg.description || ''}</small>
+                  ${pkg.popular ? '<span class="badge bg-warning text-dark ms-1">জনপ্রিয়</span>' : ''}
+                </label>
+              </div>
+            </div>
+          </div>`;
+      });
+      // Build images carousel if multiple images
+      let imagesHTML = '';
+      if (product.image_urls && product.image_urls.length > 0) {
+        if (product.image_urls.length === 1) {
+          imagesHTML = `<img src="${product.image_urls[0]}" alt="${product.name}" class="img-fluid rounded" onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">`;
+        } else {
+          let indicators = '';
+          let slides = '';
+          product.image_urls.forEach((imgUrl, idx) => {
+            indicators += `<button type="button" data-bs-target="#carouselImages" data-bs-slide-to="${idx}" ${idx === 0 ? 'class="active" aria-current="true"' : ''} aria-label="Slide ${idx+1}"></button>`;
+            slides += `<div class="carousel-item ${idx === 0 ? 'active' : ''}"><img src="${imgUrl}" class="d-block w-100" alt="${product.name}"></div>`;
+          });
+          imagesHTML = `
+            <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">${indicators}</div>
+              <div class="carousel-inner">${slides}</div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>`;
+        }
+      }
+      // Build video embed if provided
+      let videoHTML = '';
+      if (product.video_url) {
+        // Simple embed using iframe; sanitize if needed
+        videoHTML = `<div class="ratio ratio-16x9 my-3"><iframe src="${product.video_url}" allowfullscreen></iframe></div>`;
+      }
+      // Build main HTML
+      container.innerHTML = `
+        <div class="row g-4">
+          <div class="col-lg-6">
+            ${imagesHTML}
+            ${videoHTML}
+          </div>
+          <div class="col-lg-6">
+            <h2 class="mb-2">${product.name}</h2>
+            <p class="text-muted">বিভাগ: ${catNames}</p>
+            <p>${product.description}</p>
+            <h5 class="mt-4">প্যাকেজ নির্বাচন করুন:</h5>
+            <div class="row" id="packageOptions">
+              ${packageOptionsHTML}
+            </div>
+            <h5 class="mt-4">আপনার তথ্য দিন:</h5>
+            <form id="orderForm">
+              <div class="mb-3">
+                <label for="customerName" class="form-label">নাম (ঐচ্ছিক)</label>
+                <input type="text" class="form-control" id="customerName" placeholder="আপনার নাম লিখুন">
+              </div>
+              <div class="mb-3">
+                <label for="mobile" class="form-label">মোবাইল নম্বর *</label>
+                <input type="tel" class="form-control" id="mobile" placeholder="মোবাইল নম্বর" required>
+              </div>
+              <div class="mb-3">
+                <label for="address" class="form-label">ঠিকানা (ঐচ্ছিক)</label>
+                <textarea class="form-control" id="address" rows="2" placeholder="আপনার পূর্ণ ঠিকানা"></textarea>
+              </div>
+              <!-- Order summary will show below -->
+              <h5 class="mt-4">আপনার অর্ডার:</h5>
+              <div id="orderSummary" class="border p-3 mb-3 bg-light">
+                <p>একটি প্যাকেজ নির্বাচন করুন।</p>
+              </div>
+              <button type="submit" class="btn btn-success" id="orderBtn" disabled>অর্ডার করুন</button>
+            </form>
+          </div>
+        </div>
+      `;
+      // After injecting HTML, add event listeners
+      const packageRadios = container.querySelectorAll('input[name="packageOption"]');
+      const orderSummaryDiv = document.getElementById('orderSummary');
+      const orderBtn = document.getElementById('orderBtn');
+      let selectedPackageIndex = null;
+      function updateSummary() {
+        if (selectedPackageIndex === null) {
+          orderSummaryDiv.innerHTML = '<p>একটি প্যাকেজ নির্বাচন করুন।</p>';
+          orderBtn.disabled = true;
+          return;
+        }
+        const pkg = product.packages[selectedPackageIndex];
+        const total = pkg.price + shippingCost;
+        orderSummaryDiv.innerHTML = `
+          <table class="table mb-0">
+            <tbody>
+              <tr><th>পণ্য</th><td>${product.name}</td></tr>
+              <tr><th>প্যাকেজ</th><td>${pkg.name}</td></tr>
+              <tr><th>প্যাকেজ মূল্য</th><td>৳ ${pkg.price}</td></tr>
+              <tr><th>ডেলিভারি চার্জ</th><td>৳ ${shippingCost}</td></tr>
+              <tr><th>মোট</th><td><strong>৳ ${total}</strong></td></tr>
+            </tbody>
+          </table>`;
+        orderBtn.disabled = false;
+      }
+      packageRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          // set active class on cards
+          const cards = container.querySelectorAll('.package-card');
+          cards.forEach(card => card.classList.remove('active'));
+          const selectedCard = this.closest('.package-card');
+          if (selectedCard) selectedCard.classList.add('active');
+          selectedPackageIndex = parseInt(this.value);
+          updateSummary();
+        });
+      });
+      // Handle form submission
+      const form = document.getElementById('orderForm');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (selectedPackageIndex === null) {
+          alert('অনুগ্রহ করে একটি প্যাকেজ নির্বাচন করুন।');
+          return;
+        }
+        const mobile = document.getElementById('mobile').value.trim();
+        if (!mobile) {
+          alert('মোবাইল নম্বর প্রদান করা আবশ্যক।');
+          return;
+        }
+        const name = document.getElementById('customerName').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const pkg = product.packages[selectedPackageIndex];
+        const total = pkg.price + shippingCost;
+        // Save order
+        const orderId = addOrder({
+          productId: product.id,
+          productName: product.name,
+          packageName: pkg.name,
+          packagePrice: pkg.price,
+          shippingCost: shippingCost,
+          total: total,
+          customerName: name,
+          mobile: mobile,
+          address: address
+        });
+        alert('আপনার অর্ডার গ্রহণ করা হয়েছে! অর্ডার আইডি #' + orderId);
+        // Reset form
+        form.reset();
+        selectedPackageIndex = null;
+        updateSummary();
+      });
+    })();
+  </script>
+</body>
+</html>
