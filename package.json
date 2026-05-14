@@ -4,10 +4,9 @@
   "version": "1.0.0",
   "description": "Full stack Bengali e-commerce website using React, Firebase Auth, Firebase Realtime Database, and Firebase Storage.",
   "type": "module",
-  "homepage": "https://organictarabul.github.io/web/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node postbuild.cjs",
+    "build": "vite build",
     "preview": "vite preview",
     "set-admin": "node scripts/setAdminClaim.cjs"
   },
